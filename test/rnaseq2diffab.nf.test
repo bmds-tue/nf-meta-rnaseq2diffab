@@ -1,0 +1,59 @@
+
+nextflow_workflow {
+
+    name "Test workflow rnaseq2diffab"
+    script "../main.nf"
+    workflow "rnaseq2diffab"
+
+    test("Joins samplesheet and conditions on shared key") {
+
+        when {
+            params {
+                samplesheet = "${projectDir}/testdata/samplesheet.csv"
+                conditions  = "${projectDir}/testdata/conditions.csv"
+                join_key    = "sample_id"
+                outdir      = "${outputDir}"
+            }
+        }
+
+        then {
+            // ── workflow completed without error ──────────────────────────────
+            assert workflow.success
+
+            // ── output channel emits exactly one file ─────────────────────────
+            assert workflow.out.merged_samplesheet        != null
+            assert workflow.out.merged_samplesheet.size() == 1
+
+            // ── inspect the file itself ───────────────────────────────────────
+            def merged = path(workflow.out.merged_samplesheet.get(0))
+
+            def lines = merged.readLines()
+
+            // correct header: all columns from both sheets, deduplicated join key
+            assert lines[0] == "sample_id,foo,bar,condition"
+
+            // correct data row
+            assert lines[1] == "s1,100,200,tumor"
+
+            // no extra rows (header + 1 data row only)
+            assert lines.size() == 2
+        }
+    }
+
+    test("Fails gracefully when samplesheet is missing") {
+
+        when {
+            params {
+                samplesheet = "${projectDir}/testdata/does_not_exist.csv"
+                conditions  = "${projectDir}/testdata/conditions.csv"
+                join_key    = "sample_id"
+                outdir      = "${outputDir}"
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+    }
+
+}
