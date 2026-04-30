@@ -2,7 +2,7 @@
 params {
     samplesheet: Path
     conditions: Path
-    join_key: String
+    join_key: String = "sample"
     outdir: String
 }
 
@@ -45,6 +45,6 @@ workflow {
 
 output {
     merged_samplesheet: Channel<Path> {
-        path "${params.outdir}/samplesheet_with_conditions.csv"
+        path "${params.outdir}/samplesheet.csv"
     }
 }
