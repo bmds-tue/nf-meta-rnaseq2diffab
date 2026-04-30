@@ -1,4 +1,3 @@
-// ── parameters ───────────────────────────────────────────────────────────────
 
 params {
     samplesheet: Path
@@ -6,8 +5,6 @@ params {
     join_key: String
     outdir: String
 }
-
-// ── named workflow ────────────────────────────────────────────────────────────
 
 workflow rnaseq2diffab {
 
