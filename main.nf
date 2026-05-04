@@ -7,22 +7,6 @@ params.outname = "samplesheet.csv"
 params.quotechar = '"'
 
 
-process PUBLISH_CSV {
-    publishDir params.outdir, pattern: "*.csv", mode: 'copy', saveAs: { params.outname }
-
-    input:
-    path csv
-
-    output:
-    path "*.csv"
-
-    script:
-    """
-    cp ${csv} ${csv}_copy.csv
-    """
-}
-
-
 workflow rnaseq2diffab {
 
     main:
@@ -34,16 +18,17 @@ workflow rnaseq2diffab {
     conditionsCh = channel
         .fromPath( params.conditions )
         .splitCsv( header: true, quote: params.quotechar )
-
+    
     mergedCh = samplesCh
         .combine( conditionsCh )
         .filter  { s, c -> s[ params.join_key ] == c[ params.join_key ] }
         .map     { s, c -> s + c }
         .collect()
-        .flatMap { rows ->
-            [ rows[0].keySet().join(',') ] + rows.collect { it.values().join(',') }
+        .map { rows ->
+            rows[0].keySet().join(',') + '\n' +
+            rows.collect { it.values().join(',') }.join('\n') + '\n'
         }
-        .collectFile( name: 'samplesheet.csv', newLine: true )
+        .collectFile( name: 'samplesheet.csv', storeDir: params.outdir )
 
     emit:
     merged_samplesheet = mergedCh
@@ -53,5 +38,4 @@ workflow rnaseq2diffab {
 workflow {
     main:
     rnaseq2diffab()
-    PUBLISH_CSV(rnaseq2diffab.out.merged_samplesheet)
 }
