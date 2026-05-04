@@ -13,11 +13,11 @@ process PUBLISH_CSV {
     path csv
 
     output:
-    path csv
+    path "*.csv"
 
     script:
     """
-    true
+    cp ${csv} ${csv}_copy.csv
     """
 }
 
