@@ -12,6 +12,7 @@ nextflow_workflow {
                 samplesheet = "${projectDir}/testdata/samplesheet.csv"
                 conditions  = "${projectDir}/testdata/conditions.csv"
                 join_key    = "sample_id"
+                keep_cols   = ""
                 outdir      = "${outputDir}"
             }
         }
@@ -32,7 +33,7 @@ nextflow_workflow {
             // correct header: all columns from both sheets, deduplicated join key
             assert lines[0] == "sample_id,foo,bar,condition"
 
-            // correct data row
+            // correct data row -> all columns kept
             assert lines[1] == "s1,100,200,tumor"
 
             // no extra rows (header + 1 data row only)
@@ -80,7 +81,7 @@ nextflow_workflow {
             def merged = path(workflow.out.merged_samplesheet.get(0))
             def lines = merged.readLines()
 
-            assert lines[0] == "sample,fastq_1,fastq_2,strandedness,run_accession,experiment_accession,sample_accession,secondary_sample_accession,study_accession,secondary_study_accession,submission_accession,run_alias,experiment_alias,sample_alias,study_alias,library_layout,library_selection,library_source,library_strategy,library_name,instrument_model,instrument_platform,base_count,read_count,tax_id,scientific_name,sample_title,experiment_title,study_title,sample_description,fastq_md5,fastq_bytes,fastq_ftp,fastq_galaxy,fastq_aspera,condition"
+            assert lines[0] == "sample,condition"
 
         }
     }
