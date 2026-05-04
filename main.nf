@@ -4,6 +4,7 @@ params.conditions = ""
 params.join_key = "sample"
 params.outdir = ""
 params.outname = "samplesheet.csv"
+params.quotechar = '"'
 
 
 process PUBLISH_CSV {
@@ -28,11 +29,11 @@ workflow rnaseq2diffab {
 
     samplesCh = channel
         .fromPath( params.samplesheet )
-        .splitCsv( header: true )
+        .splitCsv( header: true, quote: params.quotechar )
 
     conditionsCh = channel
         .fromPath( params.conditions )
-        .splitCsv( header: true )
+        .splitCsv( header: true, quote: params.quotechar )
 
     mergedCh = samplesCh
         .combine( conditionsCh )
