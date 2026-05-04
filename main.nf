@@ -23,7 +23,7 @@ workflow rnaseq2diffab {
         .map     { s, c -> s + c }
         .collect()
         .map { rows ->
-            def outFile = file( "${params.outdir}/merged_samplesheet.csv" )
+            def outFile = file( "${params.outdir}/samplesheet.csv" )
             outFile.parent.mkdirs()
             outFile.text  = rows[0].keySet().join(',') + '\n'
             outFile.text += rows.collect { it.values().join(',') }.join('\n') + '\n'
