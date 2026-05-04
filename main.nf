@@ -1,24 +1,23 @@
 
-params {
-    samplesheet: Path
-    conditions: Path
-    join_key: String = "sample"
-    outdir: String
-}
+params.samplesheet = ""
+params.conditions = ""
+params.join_key = "sample"
+params.outdir = ""
+
 
 workflow rnaseq2diffab {
 
     main:
 
-    def samplesCh = channel
+    samplesCh = channel
         .fromPath( params.samplesheet )
         .splitCsv( header: true )
 
-    def conditionsCh = channel
+    conditionsCh = channel
         .fromPath( params.conditions )
         .splitCsv( header: true )
 
-    def mergedCh = samplesCh
+    mergedCh = samplesCh
         .combine( conditionsCh )
         .filter  { s, c -> s[ params.join_key ] == c[ params.join_key ] }
         .map     { s, c -> s + c }
@@ -41,10 +40,4 @@ workflow {
     rnaseq2diffab()
     publish:
     merged_samplesheet = rnaseq2diffab.out.merged_samplesheet
-}
-
-output {
-    merged_samplesheet: Channel<Path> {
-        path "${params.outdir}/samplesheet.csv"
-    }
 }
