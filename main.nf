@@ -28,7 +28,7 @@ workflow rnaseq2diffab {
             rows[0].keySet().join(',') + '\n' +
             rows.collect { it.values().join(',') }.join('\n') + '\n'
         }
-        .collectFile( name: 'samplesheet.csv', storeDir: params.outdir )
+        .collectFile( name: params.outname, storeDir: params.outdir )
 
     emit:
     merged_samplesheet = mergedCh
