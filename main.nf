@@ -3,11 +3,11 @@ params.samplesheet = ""
 params.conditions = ""
 params.join_key = "sample"
 params.outdir = ""
-params.outname = "samplesheet"
+params.outname = "samplesheet.csv"
 
 
 process PUBLISH_CSV {
-    publishDir params.outdir, mode: 'copy', saveAs: { params.outname }
+    publishDir params.outdir, pattern: "*.csv", mode: 'copy', saveAs: { params.outname }
 
     input:
     path csv
